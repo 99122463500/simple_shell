@@ -1,78 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
-#define MAX_BUFFER 1024
+#include "karabo"
 
 /**
- * main - Simple UNIX command line interpreter.
+ * cd - changes the working dir of the current shell executon env
+ * @args: target directory
  *
- * Return: Always 0.
+ * Return: 1 one success, 0 otherwise.
  */
-int main(void)
+int cd(char **args)
 {
-    char buffer[MAX_BUFFER];
-    pid_t child_pid;
-    int status;
-
-    while (1)
-    {
-        // Display prompt
-        printf("$ ");
-
-        // Read command from user
-        if (fgets(buffer, MAX_BUFFER, stdin) == NULL)
-        {
-            if (feof(stdin))
-            {
-                printf("\n"); // Print a new line on Ctrl+D (EOF)
-                exit(0);
-            }
-            perror("Error reading command");
-            exit(EXIT_FAILURE);
-        }
-
-        // Remove newline character
-        buffer[strcspn(buffer, "\n")] = '\0';
-
-        // Fork a child process
-        child_pid = fork();
-
-        if (child_pid == -1)
-        {
-            perror("Error forking process");
-            exit(EXIT_FAILURE);
-        }
-
-        if (child_pid == 0) // Child process
-        {
-            // Execute the command using execvp
-            if (execvp(buffer, NULL) == -1)
-            {
-                perror("Command not found");
-                exit(EXIT_FAILURE);
-            }
-        }
-        else // Parent process
-        {
-            // Wait for the child process to complete
-            waitpid(child_pid, &status, 0);
-
-            if (WIFEXITED(status))
-            {
-                // Child process exited normally
-                printf("Child process exited with status %d\n", WEXITSTATUS(status));
-            }
-            else
-            {
-                // Child process exited abnormally
-                printf("Child process exited abnormally\n");
-            }
-        }
-    }
-
-    return 0;
+	if (args[1] == NULL)
+	{
+		_puts("expected argument to \"cd\"\n");
+	}
+	else
+	{
+		if (chdir(args[1]) != 0)
+		{
+			perror("error in own_cd.c: changing dir\n");
+		}
+	}
+	return (-1);
 }
-
