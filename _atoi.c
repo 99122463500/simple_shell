@@ -1,42 +1,29 @@
-#include <stdio.h>
+#include "karabo"
 
 /**
- * calculate_factorial - Calculate the factorial of a non-negative integer.
- * @n: The number for which factorial is calculated.
+ * assist - print help
+ * @args: arguments
  *
- * Return: The factorial of n.
+ * Return: 1 on success, 0 otherwise
  */
-unsigned long long calculate_factorial(int n)
+int assist(char **args)
 {
-	if (n == 0 || n == 1)
-		return 1;
-	else
-		return n * calculate_factorial(n - 1);
-}
+	char *builtin_func_list[] = {
+		"cd",
+		"env",
+		"help",
+		"exit"
+	};
+	unsigned long int i = 0;
+	(void)(**args);
 
-/**
- * main - Entry point of the program.
- *
- * Return: 0 on success, 1 on error.
- */
-int main(void)
-{
-	int number;
-
-	/* Prompt the user to enter a number */
-	printf("Enter a non-negative integer: ");
-	scanf("%d", &number);
-
-	/* Check if the number is non-negative */
-	if (number < 0)
+	_puts("\n---help simple_shell---\n");
+	_puts("Type a command and its arguments, then hit enter\n");
+	_puts("Built-in commands:\n");
+	for (; i < sizeof(builtin_func_list) / sizeof(char *); i++)
 	{
-		printf("Please enter a non-negative integer.\n");
-		return 1; /* Return an error code */
+		printf("  -> %s\n", builtin_func_list[i]);
 	}
-
-	/* Calculate and display the factorial */
-	printf("The factorial of %d is: %llu\n", number, calculate_factorial(number));
-
-	return 0;
+	_puts("Use the man command for information on other programs.\n\n");
+	return (-1);
 }
-
