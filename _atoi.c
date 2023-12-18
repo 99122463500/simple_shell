@@ -1,29 +1,74 @@
-#include "karabo"
+#include "shell.h"
 
 /**
- * assist - print help
- * @args: arguments
+ * interactive - returns true if shell is interactive mode
+ * @info: struct address
  *
- * Return: 1 on success, 0 otherwise
+ * Return: 1 if interactive mode, 0 otherwise
  */
-int assist(char **args)
+int interactive(info_t *info)
 {
-	char *builtin_func_list[] = {
-		"cd",
-		"env",
-		"help",
-		"exit"
-	};
-	unsigned long int i = 0;
-	(void)(**args);
+	return (isatty(STDIN_FILENO) && info->readfd <= 2);
+}
 
-	_puts("\n---help simple_shell---\n");
-	_puts("Type a command and its arguments, then hit enter\n");
-	_puts("Built-in commands:\n");
-	for (; i < sizeof(builtin_func_list) / sizeof(char *); i++)
+/**
+ * is_delim - checks if character is a delimeter
+ * @c: the char to check
+ * @delim: the delimeter string
+ * Return: 1 if true, 0 if false
+ */
+int is_delim(char c, char *delim)
+{
+	while (*delim)
+		if (*delim++ == c)
+			return (1);
+	return (0);
+}
+
+/**
+ *_isalpha - checks for alphabetic character
+ *@c: The character to input
+ *Return: 1 if c is alphabetic, 0 otherwise
+ */
+
+int _isalpha(int c)
+{
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+		return (1);
+	else
+		return (0);
+}
+
+/**
+ *_atoi - converts a string to an integer
+ *@s: the string to be converted
+ *Return: 0 if no numbers in string, converted number otherwise
+ */
+
+int _atoi(char *s)
+{
+	int i, sign = 1, flag = 0, output;
+	unsigned int result = 0;
+
+	for (i = 0;  s[i] != '\0' && flag != 2; i++)
 	{
-		printf("  -> %s\n", builtin_func_list[i]);
+		if (s[i] == '-')
+			sign *= -1;
+
+		if (s[i] >= '0' && s[i] <= '9')
+		{
+			flag = 1;
+			result *= 10;
+			result += (s[i] - '0');
+		}
+		else if (flag == 1)
+			flag = 2;
 	}
-	_puts("Use the man command for information on other programs.\n\n");
-	return (-1);
+
+	if (sign == -1)
+		output = -result;
+	else
+		output = result;
+
+	return (output);
 }
